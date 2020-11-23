@@ -345,7 +345,14 @@ export class CommonDatabase implements Database {
     );
 
     // TODO(blam): translate constraint failures to sane NotFoundError instead
-    await tx.batchInsert('entities_relations', relationsRows, BATCH_SIZE);
+    await tx.batchInsert(
+      'entities_relations',
+      lodash.uniqBy(
+        relationsRows,
+        r => `${r.source_full_name}:${r.target_full_name}:${r.type}`,
+      ),
+      BATCH_SIZE,
+    );
   }
 
   async addLocation(
